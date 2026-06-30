@@ -1,0 +1,9 @@
+# Keep vCard files with CRLF line endings (required by the vCard spec)
+*.vcf   text eol=crlf
+
+# HTML/CSS/JS served as-is with LF
+*.html  text eol=lf
+
+# Treat images and scripts sensibly
+*.png   binary
+*.ps1   text eol=crlf
