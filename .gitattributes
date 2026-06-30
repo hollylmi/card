@@ -1,5 +1,6 @@
-# Keep vCard files with CRLF line endings (required by the vCard spec)
-*.vcf   text eol=crlf
+# Store vCard files exactly as written (preserve CRLF in the served blob).
+# GitHub Pages serves the raw blob, so the bytes must not be normalized.
+*.vcf   -text
 
 # HTML/CSS/JS served as-is with LF
 *.html  text eol=lf
