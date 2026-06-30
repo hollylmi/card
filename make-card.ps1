@@ -35,7 +35,8 @@ param(
   [string]$OutName = "",
   [string]$LogoPath = "$PSScriptRoot\logo colour no background.png",
   [string]$Background = "$PSScriptRoot\Background.jpeg",
-  [string]$TemplatePath = "$PSScriptRoot\_template.html"
+  [string]$TemplatePath = "$PSScriptRoot\_template.html",
+  [switch]$Publish
 )
 
 $ErrorActionPreference = "Stop"
@@ -165,3 +166,17 @@ Write-Host "  Folder : $outDir"
 Write-Host "  Headshot: $([bool]$Headshot)   LinkedIn: $([bool]$LinkedIn)"
 Write-Host "  URL    : https://hollylmi.github.io/card/$urlPath" -ForegroundColor Cyan
 Write-Host ""
+
+# --- optional: publish straight to GitHub Pages ----------------------------
+if($Publish){
+  Write-Host "  Publishing to GitHub..." -ForegroundColor Yellow
+  Push-Location $PSScriptRoot
+  try{
+    git add -A
+    git -c core.safecrlf=false commit -m "Add/update card for $Name" 2>&1 | Out-Null
+    git push origin main 2>&1 | Out-Null
+    Write-Host "  Published. Live in ~1 minute at:" -ForegroundColor Green
+    Write-Host "  https://hollylmi.github.io/card/$urlPath" -ForegroundColor Cyan
+    Write-Host ""
+  } finally { Pop-Location }
+}
