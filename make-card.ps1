@@ -33,7 +33,7 @@ param(
   [string]$Org = "LMI Group Investments",
   [string]$Slug = "",
   [string]$OutName = "",
-  [string]$LogoPath = "$PSScriptRoot\logo colour no background.png",
+  [string]$LogoPath = "$PSScriptRoot\Logo_Final.png",
   [string]$Background = "$PSScriptRoot\Background.jpeg",
   [string]$TemplatePath = "$PSScriptRoot\_template.html",
   [switch]$Publish
@@ -71,6 +71,20 @@ function Get-DataUri([string]$path){
 function Get-SquareJpegDataUri([string]$path,[int]$size=480,[int]$quality=82){
   $img = [System.Drawing.Image]::FromFile($path)
   try{
+    # Honor EXIF orientation (System.Drawing does not auto-apply it, so phone
+    # photos taken sideways would otherwise be cropped/inlined rotated).
+    if($img.PropertyIdList -contains 274){
+      $o = $img.GetPropertyItem(274).Value[0]
+      switch($o){
+        2 { $img.RotateFlip([System.Drawing.RotateFlipType]::RotateNoneFlipX) }
+        3 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipNone) }
+        4 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipX) }
+        5 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate90FlipX) }
+        6 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate90FlipNone) }
+        7 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate270FlipX) }
+        8 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate270FlipNone) }
+      }
+    }
     $side = [Math]::Min($img.Width, $img.Height)
     $sx = [int](($img.Width - $side)/2); $sy = [int](($img.Height - $side)/2)
     $bmp = New-Object System.Drawing.Bitmap $size,$size
